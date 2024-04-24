@@ -41,20 +41,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     // 頂点配列を定義
     SimpleVertex vertices[] = {
         {
+            //左下
             {-0.5f, -0.5f, 0.0f},
-            { 1.0f, 0.0f, 0.0f }
+            { 0.0f, 0.0f, 1.0f }
         },
         {
+            //左上
             { -0.5f, 0.5f, 0.0f },
             { 0.0f, 1.0f, 0.0f }
         },
         {
+            //右下
             { 0.5f, -0.5f, 0.0f },
-            { 0.0f, 0.0f, 1.0f }
+            { 1.0f, 0.0f, 0.0f }
         },
         {
+            //右上
             { 0.5f, 0.5f, 0.0f },
-            { 1.0f, 0.0f, 0.0f }
+            { 0.0f, 0.0f, 0.0f }
         }
     };
 
@@ -98,7 +102,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         renderContext.SetIndexBuffer(triangleIB);
         // 6. ドローコール
         renderContext.DrawIndexed(6);
-
         /// //////////////////////////////////////
         // 絵を描くコードを書くのはここまで！！！
         //////////////////////////////////////
