@@ -13,7 +13,7 @@ struct Light
     float pad1;
 
     // ライト構造体にポイントライト用のメンバ変数を追加
-    Vector3 ptPosition;     // 位置
+    Vector3 spPosition;     // 位置
     float pad2;             // パディング
     Vector3 ptColor;        // カラー
     float ptRange;          // 影響範囲

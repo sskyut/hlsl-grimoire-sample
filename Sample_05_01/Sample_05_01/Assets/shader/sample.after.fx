@@ -95,6 +95,7 @@ float4 PSMain(SPSIn psIn) : SV_Target0
 
     // step-7 サーフェイスに入射するポイントライトの光の向きを計算する
     float3 ligDir = psIn.worldPos - ptPosition;
+
     // 正規化して大きさ1のベクトルにする
     ligDir = normalize(ligDir);
 

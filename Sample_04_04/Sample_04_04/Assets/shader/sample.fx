@@ -114,6 +114,10 @@ float4 PSMain(SPSIn psIn) : SV_Target0
     float3 lig = diffuseLig + specularLig;
 
     // step-1 ライトの効果を一律で底上げする
+    lig.x += 0.2f;
+    lig.y += 0.2f;
+    lig.z += 0.2f;
+
 
     float4 finalColor = g_texture.Sample(g_sampler, psIn.uv);
 
