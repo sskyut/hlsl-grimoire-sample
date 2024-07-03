@@ -152,6 +152,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		// スポットライトモデルをドロー
 		lightModel.Draw(renderContext);
 
+		//
+		/*teapotModel.UpdateWorldMatrix(
+			{
+				(float)sin(f / 13.0f) * 100.0f
+
+			});*/
+
+
 		teapotModel.Draw(renderContext);
 
 		//////////////////////////////////////
