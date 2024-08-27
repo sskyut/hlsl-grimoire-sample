@@ -38,10 +38,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     // 初期化を行うコードを書くのはここまで！！！
     //////////////////////////////////////
     auto& renderContext = g_graphicsEngine->GetRenderContext();
-
+    float f = 0;
     // ここからゲームループ
     while (DispatchWindowMessage())
     {
+        f++;
         //フレーム開始
         g_engine->BeginFrame();
 
@@ -53,8 +54,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         renderContext.SetRootSignature(rootSignature);
 
         // step-3 ワールド行列を作成
-        Matrix mWorld;
-        mWorld.MakeTranslation(0.5f, 0.4f, 0.0f);
+        Matrix mWorld1;
+        mWorld1.MakeTranslation(sin(f / 100.0f), 0.0f, 0.0f);
+        Matrix mWorld2;
+        mWorld2.MakeRotationZ(f / 100.0f);
+        Matrix mWorld = mWorld2 * mWorld1;
 
         // step-4 ワールド行列をグラフィックメモリにコピー
         cb.CopyToVRAM(mWorld);
