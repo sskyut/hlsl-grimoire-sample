@@ -25,12 +25,38 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     ConstantBuffer cb;
 
     cb.Init(sizeof(Matrix));
-    // 三角形ポリゴンを定義
+    // 四角形ポリゴンを定義
+    //TrianglePolygon内を四角形になるように改造したためややこしいがこれで四角形が出来る
     TrianglePolygon triangle;
     triangle.Init(rootSignature);
 
     // step-1 三角形ポリゴンにUV座標を設定
 
+    //通常の見た目
+    //triangle.SetUVCoord(
+    //    0,    //頂点の番号,
+    //    0.0f, //U座標
+    //    1.0f  //V座標
+    //);
+
+    //triangle.SetUVCoord(
+    //    1,    //頂点の番号
+    //    0.0f, //U座標
+    //    0.0f  //V座標
+    //);
+
+    //triangle.SetUVCoord(
+    //    2,    //頂点の番号
+    //    1.0f, //U座標
+    //    0.0f  //V座標
+    //);
+    //triangle.SetUVCoord(
+    //    3,    //頂点の番号
+    //    1.0f, //U座標
+    //    1.0f  //V座標
+    //);
+
+    //左右反対の見た目
     triangle.SetUVCoord(
         0,    //頂点の番号,
         1.0f, //U座標
@@ -39,12 +65,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
     triangle.SetUVCoord(
         1,    //頂点の番号
-        0.5f, //U座標
+        1.0f, //U座標
         0.0f  //V座標
     );
 
     triangle.SetUVCoord(
         2,    //頂点の番号
+        0.0f, //U座標
+        0.0f  //V座標
+    );
+    triangle.SetUVCoord(
+        3,    //頂点の番号
         0.0f, //U座標
         1.0f  //V座標
     );
