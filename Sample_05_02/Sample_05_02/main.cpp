@@ -20,7 +20,8 @@ struct Light
 
 	// step-1 ライト構造体にスポットライト用のメンバ変数を追加
 	Vector3 spPosition;  //位置
-	float pad3;          //パディング
+	float spDistanceRate; // 距離による減退率
+	//float pad3;          //パディング
 	Vector3 spColor;     //カラー
 	float spRange;       //影響範囲
 	Vector3 spDirection; //射出方向
@@ -69,15 +70,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	light.spPosition.y = 50.0f;
 	light.spPosition.z = 0.0f;
 
+	// 追加要素 減退率に値を代入
+	light.spDistanceRate = 1.25f;
+
 	//ライトのカラーを設定。R  = 10 ,G = 10,B = 10 にする
 	light.spColor.x = 10.0f;
     light.spColor.y = 10.0f;
     light.spColor.z = 10.0f;
 
 	//初期方向は斜め下にする
-	light.spDirection.x = 1.0f;
+	light.spDirection.x = -1.0f;
 	light.spDirection.y = -1.0f;
-	light.spDirection.z = 1.0f;
+	light.spDirection.z = -1.0f;
 
 	// 方向データなので、大きさを1にする必要があるので正規化する
 	light.spDirection.Normalize();
@@ -97,9 +101,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//////////////////////////////////////
 	auto& renderContext = g_graphicsEngine->GetRenderContext();
 
+	UINT f = 0;
+
 	// ここからゲームループ
 	while (DispatchWindowMessage())
 	{
+		//減退率の計算
+		f++;
+		light.spDistanceRate = sin(f / 39.0f) * 2 + 2.0f;
+		light.spColor.x = sin(f / 13.0f) * 5.0f + 10.0f;
+
+
+
+
 		// レンダリング開始
 		g_engine->BeginFrame();
 		//////////////////////////////////////
@@ -124,7 +138,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		// step-4 コントローラー右スティックでスポットライトを回転させる
 		//y軸周りのクォータニオンを計算する
 		Quaternion qRotY;
-		qRotY.SetRotationY(g_pad[0]->GetLStickXF() * 0.01f);
+		//qRotY.SetRotationY(g_pad[0]->GetLStickXF() * 0.01f);
+		//自動で回転するようにする
+		qRotY.SetRotationY((sin(f / 20.0f) + 2.0f) * 0.0625f);
+
 
 		//計算したクォータニオンでライトの方向を回す
 		qRotY.Apply(light.spDirection);
@@ -152,13 +169,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		// スポットライトモデルをドロー
 		lightModel.Draw(renderContext);
 
-		//
-		/*teapotModel.UpdateWorldMatrix(
+		//ティーポットを回転させる
+		teapotModel.UpdateWorldMatrix(
 			{
-				(float)sin(f / 13.0f) * 100.0f
+				(float)sin(f / 13.0f) * 100.0f,
+				20.0f,
+				0.0f
 
-			});*/
-
+			},
+			qRot.Identity,
+			{
+				1,
+				((float)sin(f / 20.0f) + 1.2f),
+				1
+			}
+		);
 
 		teapotModel.Draw(renderContext);
 

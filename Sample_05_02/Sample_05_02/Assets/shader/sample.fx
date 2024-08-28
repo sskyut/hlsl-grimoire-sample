@@ -43,6 +43,7 @@ cbuffer DirectionLightCb : register(b1)
 
 	// step-5 スポットライトのデータにアクセスするための変数を追加する
 	float3 spPositoin;
+	float  spDistanceRate;
 	float3 spColor;
 	float spRange;
 	float3 spDirection;
@@ -128,42 +129,42 @@ float4 PSMain(SPSIn psIn) : SV_Target0
 	);
 
 	// step-9 距離による影響率を計算する
-	//
+	// スポットライトとの距離を計算する
 	float3 distance = length(psIn.worldPos - spPositoin);
 
-	//
+	//影響率は距離に比例して小さくなっていく
 	float affect = 1.0f - 1.0f / spRange * distance;
 
-	//
+	//影響力がマイナスにならないように補正をかける
 	if (affect < 0.0f)
 	{
 		affect = 0.0f;
 	}
 
-	//
-	affect = pow(affect, 3.0f);
+	//影響の仕方を指数関数的にする。今回のサンプルでは3乗している
+	affect = pow(affect, spDistanceRate);
 
 	// step-10 影響率を乗算して反射光を弱める
 	diffSpotLight *= affect;
 	specSpotLight *= affect;
 	// step-11 入射光と射出方向の角度を求める
-	//
+	//dot()を利用して内積を求める
 	float angle = dot(ligDir, spDirection);
 
-	//
+	//dot()で求めた値をacos()に渡して角度を求める
 	angle = abs(acos(angle));
 
 	// step-12 角度による影響率を求める
-	//
+	//角度に比例して小さくなっていく影響率を計算する
 	affect = 1.0 - 1.0f / spAngle * angle;
 
-	//
+	//影響率がマイナスにならないように補正をかける
 	if (affect < 0.0f) 
 	{
 		affect = 0.0f;
 	}
 
-	//
+	//影響の仕方を指数関数的にする。今回のサンプルでは0.5乗している
 	affect = pow(affect, 0.5f);
 
 	// step-13 角度による影響率を反射光に乗算して、影響を弱める
