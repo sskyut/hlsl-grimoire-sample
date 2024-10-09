@@ -40,7 +40,30 @@ float4 PSMain(PSInput In) : SV_Target0
 {
     float4 color = colorTexture.Sample(Sampler, In.uv);
 
-    // step-1 画像を徐々にネガポジ反転させていく
+    float t = (int)fmod(In.pos.x, 64.0f);
+    if (t - negaRate * 100 < 0) 
+    {
+        // ピクセルの明るさを計算する
+        float y = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
+
+        // 明るさの値をRGBに設定して、モノクロカラーを求める
+        float3 monochromeColor = float3(y, y, y);
+
+        // step-1 画像を徐々にネガポジ反転させていく
+        float3 negaColor;
+        negaColor.x = 1.0f - monochromeColor.x;
+        negaColor.y = 1.0f - monochromeColor.y;
+        negaColor.z = 1.0f - monochromeColor.z;
+
+
+
+        // ネガポジ率を使って徐々にネガポジ画像にしていく
+        color.xyz = lerp(color, negaColor, negaRate);
+
+    }
+
+
+
 
     return color;
 }
