@@ -10,93 +10,143 @@ void InitRootSignature(RootSignature& rs);
 ///////////////////////////////////////////////////////////////////
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-    // ゲームの初期化
-    InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
+	// ゲームの初期化
+	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
 
-    //////////////////////////////////////
-    // ここから初期化を行うコードを記述する
-    //////////////////////////////////////
-    RootSignature rs;
-    InitRootSignature(rs);
+	//////////////////////////////////////
+	// ここから初期化を行うコードを記述する
+	//////////////////////////////////////
+	RootSignature rs;
+	InitRootSignature(rs);
 
-    // step-1 シャドウマップ描画用のレンダリングターゲットを作成する
+	// step-1 シャドウマップ描画用のレンダリングターゲットを作成する
+	// カラーバッファーのクリアカラー
+	// 今回はカラーバッファーは真っ白にする
+	float clearColor[4] = { 1.0f,1.0f,1.0f,1.0f };
+	RenderTarget shadowMap;
+	shadowMap.Create(
+		1024,
+		1024,
+		1,
+		1,
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		DXGI_FORMAT_D32_FLOAT,
+		clearColor
+	);
 
-    // step-2 影描画用のライトカメラを作成する
 
-    // step-3 シャドウマップ描画用のモデルを用意する
+	// step-2 影描画用のライトカメラを作成する
+	Camera lightCamera;
 
-    // シャドウマップを表示するためのスプライトを初期化する
-    SpriteInitData spriteInitData;
-    spriteInitData.m_textures[0] = &shadowMap.GetRenderTargetTexture();
-    spriteInitData.m_fxFilePath = "Assets/shader/preset/sprite.fx";
-    spriteInitData.m_width = 256;
-    spriteInitData.m_height = 256;
+	// カメラの位置を設定。これはライトの位置
+	lightCamera.SetPosition(0, 600, 0);
 
-    Sprite sprite;
-    sprite.Init(spriteInitData);
+	// 【注目】上方向を設定、今回はライトが真下を向いているので、xを上にする
+	lightCamera.SetUp(0, 1, 0);
 
-    // 通常描画のティーポットモデルを初期化
-    ModelStandard teapotModel;
-    teapotModel.Init("Assets/modelData/teapot.tkm");
-    teapotModel.Update(
-        { 0, 50, 0 },
-        g_quatIdentity,
-        g_vec3One
-    );
+	// 今回のサンプルでは画角をせまめにする
+	lightCamera.SetViewAngle(Math::DegToRad(20.0f));
 
-    // 背景モデルを初期化
-    ModelStandard bgModel;
-    bgModel.Init("Assets/modelData/bg/bg.tkm");
+	// ライトビュープロジェクション行列を計算する
+	lightCamera.Update();
 
-    //////////////////////////////////////
-    // 初期化を行うコードを書くのはここまで！！！
-    //////////////////////////////////////
-    auto& renderContext = g_graphicsEngine->GetRenderContext();
+	// step-3 シャドウマップ描画用のモデルを用意する
+	ModelInitData teapotShadouModelInitData;
 
-    // ここからゲームループ
-    while (DispatchWindowMessage())
-    {
-        // 1フレームの開始
-        g_engine->BeginFrame();
+	//【注目】シャドウマップ描画用のシェーダーを指定する
+	teapotShadouModelInitData.m_fxFilePath = "Assets/shader/sampleDrawShadowMap.fx";
+	teapotShadouModelInitData.m_tkmFilePath = "Assets/modelData/teapot.tkm";
+	Model teapotShadowModel;
+	teapotShadowModel.Init(teapotShadouModelInitData);
+	teapotShadowModel.UpdateWorldMatrix(
+		{0,50,0},
+		g_quatIdentity,
+		g_vec3One
+	) ;
 
-        //////////////////////////////////////
-        // ここから絵を描くコードを記述する
-        //////////////////////////////////////
 
-        // step-4 影を生成したいモデルをシャドウマップに描画する
+	// シャドウマップを表示するためのスプライトを初期化する
+	SpriteInitData spriteInitData;
+	spriteInitData.m_textures[0] = &shadowMap.GetRenderTargetTexture();
+	spriteInitData.m_fxFilePath = "Assets/shader/preset/sprite.fx";
+	spriteInitData.m_width = 256;
+	spriteInitData.m_height = 256;
 
-        // 通常レンダリング
-        // レンダリングターゲットをフレームバッファに戻す
-        renderContext.SetRenderTarget(
-            g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
-            g_graphicsEngine->GetCurrentFrameBuffuerDSV()
-        );
-        renderContext.SetViewportAndScissor(g_graphicsEngine->GetFrameBufferViewport());
+	Sprite sprite;
+	sprite.Init(spriteInitData);
 
-        // ティーポットモデルを描画
-        teapotModel.Draw(renderContext);
+	// 通常描画のティーポットモデルを初期化
+	ModelStandard teapotModel;
+	teapotModel.Init("Assets/modelData/teapot.tkm");
+	teapotModel.Update(
+		{ 0, 50, 0 },
+		g_quatIdentity,
+		g_vec3One
+	);
 
-        // 背景を描画
-        bgModel.Draw(renderContext);
+	// 背景モデルを初期化
+	ModelStandard bgModel;
+	bgModel.Init("Assets/modelData/bg/bg.tkm");
 
-        sprite.Update({ FRAME_BUFFER_W / -2.0f, FRAME_BUFFER_H / 2.0f,  0.0f }, g_quatIdentity, g_vec3One, { 0.0f, 1.0f });
-        sprite.Draw(renderContext);
+	//////////////////////////////////////
+	// 初期化を行うコードを書くのはここまで！！！
+	//////////////////////////////////////
+	auto& renderContext = g_graphicsEngine->GetRenderContext();
 
-        //////////////////////////////////////
-        //絵を描くコードを書くのはここまで！！！
-        //////////////////////////////////////
+	// ここからゲームループ
+	while (DispatchWindowMessage())
+	{
+		// 1フレームの開始
+		g_engine->BeginFrame();
 
-        // 1フレーム終了
-        g_engine->EndFrame();
-    }
-    return 0;
+		//////////////////////////////////////
+		// ここから絵を描くコードを記述する
+		//////////////////////////////////////
+
+		// step-4 影を生成したいモデルをシャドウマップに描画する
+		// レンダリングターゲットをシャドウマップに変更する
+		renderContext.WaitUntilToPossibleSetRenderTarget(shadowMap);
+		renderContext.SetRenderTargetAndViewport(shadowMap);
+		renderContext.ClearRenderTargetView(shadowMap);
+
+		//影モデルを表示
+		teapotShadowModel.Draw(renderContext, lightCamera);
+
+		//書き込み終了待ち
+		renderContext.WaitUntilFinishDrawingToRenderTarget(shadowMap);
+
+		// 通常レンダリング
+		// レンダリングターゲットをフレームバッファに戻す
+		renderContext.SetRenderTarget(
+			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
+			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
+		);
+		renderContext.SetViewportAndScissor(g_graphicsEngine->GetFrameBufferViewport());
+
+		// ティーポットモデルを描画
+		teapotModel.Draw(renderContext);
+
+		// 背景を描画
+		bgModel.Draw(renderContext);
+
+		sprite.Update({ FRAME_BUFFER_W / -2.0f, FRAME_BUFFER_H / 2.0f,  0.0f }, g_quatIdentity, g_vec3One, { 0.0f, 1.0f });
+		sprite.Draw(renderContext);
+
+		//////////////////////////////////////
+		//絵を描くコードを書くのはここまで！！！
+		//////////////////////////////////////
+
+		// 1フレーム終了
+		g_engine->EndFrame();
+	}
+	return 0;
 }
 
 // ルートシグネチャの初期化
-void InitRootSignature( RootSignature& rs )
+void InitRootSignature(RootSignature& rs)
 {
-    rs.Init(D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-            D3D12_TEXTURE_ADDRESS_MODE_WRAP);
+	rs.Init(D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 }

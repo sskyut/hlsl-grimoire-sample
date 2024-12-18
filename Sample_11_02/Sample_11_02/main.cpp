@@ -51,6 +51,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     // シャドウマップに描画するモデルを初期化する
     ModelInitData teapotShadowModelInitData;
 
+   
+
     // シャドウマップ描画用のシェーダーを指定する
     teapotShadowModelInitData.m_fxFilePath = "Assets/shader/sampleDrawShadowMap.fx";
     teapotShadowModelInitData.m_tkmFilePath = "Assets/modelData/teapot.tkm";
@@ -72,6 +74,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     );
 
     // step-1 影を受ける背景モデルを初期化
+    ModelInitData bgModelInitData;
+
+    // シャドウレシーバー（影が落とされるモデル）用のシェーダーを指定する
+    bgModelInitData.m_fxFilePath = "Assets/shader/sampleShadowReciever.fx";
+
+    // シャドウマップを拡張SRVに設定する
+    bgModelInitData.m_expandShaderResoruceView[0] = &shadowMap.GetRenderTargetTexture();
+
+    // ライトビュープロジェクション行列を拡張定数バッファーに設定する
+    bgModelInitData.m_expandConstantBuffer = (void*)&lightCamera.GetViewProjectionMatrix();
+    bgModelInitData.m_expandConstantBufferSize = sizeof(lightCamera.GetViewProjectionMatrix());
+    bgModelInitData.m_tkmFilePath = "Assets/modelData/bg/bg.tkm";
+
+    Model bgModel;
+    bgModel.Init(bgModelInitData);
 
     //////////////////////////////////////
     // 初期化を行うコードを書くのはここまで！！！
@@ -112,7 +129,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         teapotModel.Draw(renderContext);
 
         // step-2 影を受ける背景を描画
-
+        bgModel.Draw(renderContext);
         //////////////////////////////////////
         //絵を描くコードを書くのはここまで！！！
         //////////////////////////////////////
