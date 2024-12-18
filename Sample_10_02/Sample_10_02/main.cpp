@@ -28,7 +28,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		1,
 		DXGI_FORMAT_R8G8B8A8_UNORM,
 		DXGI_FORMAT_D32_FLOAT
-		);
+	);
 
 	// 各種モデルを初期化する
 	// 背景モデルを初期化
@@ -87,7 +87,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//////////////////////////////////////
 
 		// step-3 レンダリングターゲットを変更する
-		RenderTarget* rtArray[] = {&offscreenRenderTraget};
+		RenderTarget* rtArray[] = { &offscreenRenderTraget };
 
 		// レンダリングターゲットとして利用できるまで待つ
 		renderContext.WaitUntilToPossibleSetRenderTargets(1, rtArray);

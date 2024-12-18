@@ -149,7 +149,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     // step-5 ガウシアンブラーを初期化
     GaussianBlur gaussianBlur;
     gaussianBlur.Init(&luminnceRenderTerget.GetRenderTargetTexture());
-
+ 
     // step-6 ボケ画像を加算合成するスプライトを初期化
     // 初期化情報を設定する
     SpriteInitData finalSpriteInitData;
