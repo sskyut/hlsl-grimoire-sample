@@ -1,3 +1,5 @@
+//ソラリゼーションする
+
 cbuffer cb : register(b0)
 {
 	float4x4 mvp;       // MVP行列
@@ -31,7 +33,7 @@ float4 PSMain(PSInput In) : SV_Target0
 {
 	float4 color = sceneTexture.Sample(Sampler, In.uv);
 
-	// step-7 ピクセルカラーをモノクロ化する
+	// step-7 ピクセルカラーをソラリゼーションする
 	color.r = (color.r - 0.5f) * (color.r - 0.5f) / 0.25f;
 	color.g = (color.g - 0.5f) * (color.g - 0.5f) / 0.25f;
 	color.b = (color.b - 0.5f) * (color.b - 0.5f) / 0.25f;
