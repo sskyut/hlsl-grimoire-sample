@@ -33,7 +33,7 @@ float4 PSMain(PSInput In) : SV_Target0
 {
 	float4 color = sceneTexture.Sample(Sampler, In.uv);
 
-	// step-7 ピクセルカラーをモノクロ化する
+	// step-7 ピクセルカラーを赤チャンネルのみのモノクロ化する
 	float4 Y = 0.299f * color.r + 0.587f * color.b + 0.114f * color.b;
 	color.r = Y;
 	color.g = 0;
