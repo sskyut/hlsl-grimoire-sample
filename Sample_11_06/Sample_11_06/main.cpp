@@ -202,7 +202,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			vMin = { FLT_MAX,FLT_MAX, FLT_MAX };
 			for (auto& v :verTex)
 			{
-				lvpcMatrix->Apply(v);
+				lvpMatrix.Apply(v);
 				vMax.Max(v);
 				vMin.Min(v);
 			}
@@ -229,7 +229,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			renderContext.ClearRenderTargetView(shadowMaps[areaNo]);
 
 			// 影モデルを描画
-			testShadowModel->Draw(renderContext, g_matIdentity, lvpcMatrix[areaNo]);
+			testShadowModel[areaNo].Draw(renderContext, g_matIdentity, lvpcMatrix[areaNo]);
 
 			// 書き込み完了待ち
 			renderContext.WaitUntilFinishDrawingToRenderTarget(shadowMaps[areaNo]);
