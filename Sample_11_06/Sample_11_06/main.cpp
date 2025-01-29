@@ -34,7 +34,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// step-1 シャドウマップの枚数を定数で定義する
-	const int NUM_SHADOW_MAP = 3;
+	const int NUM_SHADOW_MAP = 4;
 
 	// step-2 ライトビュープロジェクションクロップ行列の配列を定義する
 	Matrix lvpcMatrix[NUM_SHADOW_MAP];
@@ -44,8 +44,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//近影用のシャドウマップ
 	shadowMaps[0].Create(
-		2048,
-		2048,
+		4096,
+		4096,
 		1,
 		1,
 		DXGI_FORMAT_R32_FLOAT,
@@ -55,6 +55,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//中影用のシャドウマップ
 	shadowMaps[1].Create(
+		2048,
+		2048,
+		1,
+		1,
+		DXGI_FORMAT_R32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT,
+		clearColor
+	);
+
+	//遠影用のシャドウマップ
+	shadowMaps[2].Create(
 		1024,
 		1024,
 		1,
@@ -65,7 +76,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	);
 
 	//遠影用のシャドウマップ
-	shadowMaps[2].Create(
+	shadowMaps[3].Create(
 		512,
 		512,
 		1,
@@ -74,7 +85,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		DXGI_FORMAT_D32_FLOAT,
 		clearColor
 	);
-
 
 	// step-4 分割エリアの最大深度値を定義する
 	float cascadeAreaTbl[NUM_SHADOW_MAP] = {
